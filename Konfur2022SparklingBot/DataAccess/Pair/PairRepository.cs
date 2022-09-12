@@ -16,8 +16,18 @@ public class PairRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task AcceptAsync(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RejectAsync(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
     
-    public async Task<List<Pair>> FindBeforeAsync(DateTime dateTime)
+    public async Task<List<Pair>> FindStartedBeforeAsync(DateTime dateTime)
     {
         throw new NotImplementedException();
     }

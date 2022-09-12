@@ -1,6 +1,6 @@
 using Konfur2022SparklingBot.DataAccess.User;
 
-namespace Konfur2022SparklingBot.Handlers;
+namespace Konfur2022SparklingBot.Messages;
 
 public class MessageSender
 {
@@ -15,6 +15,6 @@ public class MessageSender
 
     public async Task NotifyPairFoundAsync(User user1, User user2)
     {
-        
+        throw new NotImplementedException();
     }
 }

@@ -8,4 +8,6 @@ public class Pair
     public Guid SecondUserId { get; set; }
     public bool? SecondUserAccepted { get; set; }
     public DateTime CreationDate { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }

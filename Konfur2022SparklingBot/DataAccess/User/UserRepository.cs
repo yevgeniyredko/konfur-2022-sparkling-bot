@@ -17,6 +17,16 @@ public class UserRepository
         throw new NotImplementedException();
     }
 
+    public async Task<User> FindAsync(string chatId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task WriteAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task ChangeStateAsync(Guid id, UserState userState)
     {
         throw new NotImplementedException();

@@ -1,7 +1,7 @@
 using Konfur2022SparklingBot.Common.HostedServices;
 using Konfur2022SparklingBot.DataAccess.Pair;
 using Konfur2022SparklingBot.DataAccess.User;
-using Konfur2022SparklingBot.Handlers;
+using Konfur2022SparklingBot.Messages;
 
 namespace Konfur2022SparklingBot.Services;
 

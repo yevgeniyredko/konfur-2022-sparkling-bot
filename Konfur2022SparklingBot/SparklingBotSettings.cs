@@ -13,4 +13,6 @@ public class SparklingBotSettings
     public int MaxPairsCount => _config.GetValue<int>("MaxPairsCount");
 
     public TimeSpan PairTime => _config.GetValue<TimeSpan>("PairTime");
+
+    public TimeSpan PairAcceptTtl => _config.GetValue<TimeSpan>("PairAcceptTtl");
 }

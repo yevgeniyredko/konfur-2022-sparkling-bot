@@ -1,18 +1,18 @@
 using Konfur2022SparklingBot.Common.HostedServices;
 using Konfur2022SparklingBot.DataAccess.Pair;
 using Konfur2022SparklingBot.DataAccess.User;
-using Konfur2022SparklingBot.Handlers;
+using Konfur2022SparklingBot.Messages;
 
 namespace Konfur2022SparklingBot.Services;
 
-public class BreakOutdatedPairsService : PeriodicalBackgroundService
+public class BreakFinishedPairsService : PeriodicalBackgroundService
 {
     private readonly SparklingBotSettings _settings;
     private readonly PairRepository _pairRepository;
     private readonly UserRepository _userRepository;
     private readonly MessageSender _messageSender;
 
-    public BreakOutdatedPairsService(
+    public BreakFinishedPairsService(
         SparklingBotSettings settings,
         PairRepository pairRepository,
         UserRepository userRepository,
@@ -26,7 +26,7 @@ public class BreakOutdatedPairsService : PeriodicalBackgroundService
 
     protected override async Task RunAsync(CancellationToken stoppingToken)
     {
-        var pairs = await _pairRepository.FindBeforeAsync(DateTime.UtcNow.Add(_settings.PairTime));
+        var pairs = await _pairRepository.FindStartedBeforeAsync(DateTime.UtcNow.Add(_settings.PairTime));
 
         foreach (var pair in pairs)
         {

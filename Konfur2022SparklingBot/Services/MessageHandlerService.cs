@@ -1,4 +1,4 @@
-using Konfur2022SparklingBot.Handlers;
+using Konfur2022SparklingBot.Messages;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
