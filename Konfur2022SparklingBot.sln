@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konfur2022SparklingBot", "Konfur2022SparklingBot\Konfur2022SparklingBot.csproj", "{90E8C51A-0202-4E72-9684-D62A61E6ED78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90E8C51A-0202-4E72-9684-D62A61E6ED78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90E8C51A-0202-4E72-9684-D62A61E6ED78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90E8C51A-0202-4E72-9684-D62A61E6ED78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90E8C51A-0202-4E72-9684-D62A61E6ED78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
