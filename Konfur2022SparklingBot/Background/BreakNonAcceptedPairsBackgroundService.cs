@@ -28,7 +28,6 @@ public class BreakNonAcceptedPairsBackgroundService : PeriodicalBackgroundServic
 
     protected override async Task RunAsync(CancellationToken stoppingToken)
     {
-        return;
         var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Subtract(_settings.PairAcceptTtl));
 
         foreach (var pair in pairs)

@@ -28,7 +28,6 @@ public class BreakFinishedPairsBackgroundService : PeriodicalBackgroundService
 
     protected override async Task RunAsync(CancellationToken stoppingToken)
     {
-        return;
         var pairs = await _pairRepository.SelectStartedBeforeAsync(DateTime.UtcNow.Subtract(_settings.PairTime));
 
         foreach (var pair in pairs)

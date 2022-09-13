@@ -5,6 +5,7 @@ using Konfur2022SparklingBot.Common.HostedServices;
 using Konfur2022SparklingBot.Repositories.Pair;
 using Konfur2022SparklingBot.Repositories.User;
 using Konfur2022SparklingBot.Services;
+using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,6 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapGet("/", async (AdminService b) => await b.BuildAsync());
+app.MapGet("/", async (AdminService b) => Results.Content(await b.BuildAsync(), "text/html"));
 
 app.Run();

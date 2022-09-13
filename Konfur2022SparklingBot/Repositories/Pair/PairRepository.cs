@@ -125,24 +125,24 @@ WHERE IsDeleted=FALSE AND FirstUserAccepted=TRUE AND SecondUserAccepted=TRUE AND
 ";
 
     private const string SelectByUsersSql = @"
-SELECT (Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted)
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
 WHERE FirstUserId=@FirstUserId AND SecondUserId=@SecondUserId
 ";
 
     private const string SelectAllSql = @"
-SELECT (Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted)
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
 ";
 
     private const string SelectCreatedNonStartedBeforeSql = @"
-SELECT (Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted)
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
 WHERE StartDate=NULL AND CreationDate<@CreationDate
 ";
     
     private const string SelectStartedBeforeSql = @"
-SELECT (Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted)
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
 WHERE StartDate<@StartDate
 ";

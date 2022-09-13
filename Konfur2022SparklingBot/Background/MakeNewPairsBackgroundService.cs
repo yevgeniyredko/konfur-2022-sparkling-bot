@@ -28,7 +28,6 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
 
     protected override async Task RunAsync(CancellationToken stoppingToken)
     {
-        return;
         var remainingPairsCount = _settings.MaxPairsCount - await _pairRepository.CountAsync();
         if (remainingPairsCount <= 0)
         {

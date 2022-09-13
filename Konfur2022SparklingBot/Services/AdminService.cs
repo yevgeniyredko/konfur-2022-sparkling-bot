@@ -19,9 +19,11 @@ public class AdminService
         var users = await _userRepository.SelectAllAsync();
         var pairs = await _pairRepository.SelectAllAsync();
 
-        return $@"""
+        return $@"
+<!DOCTYPE html>
 <html>
     <head>
+        <meta charset=""utf-8"">
         <title>Konfur 2022 Sparkling Bot</title>
     </head>
     <body>
@@ -64,12 +66,12 @@ public class AdminService
         </table>
     </body>
 </html>
-""";
+";
     }
 
     private static string BuildUserRow(User user)
     {
-        return $@"""
+        return $@"
                 <tr>
                     <td>{user.Id}</td>
                     <td>{user.ChatId}</td>
@@ -79,12 +81,12 @@ public class AdminService
                     <td>{user.Question3}</td>
                     <td>{user.State}</td>
                 </tr>
-""";
+";
     }
     
     private static string BuildPairRow(Pair pair)
     {
-        return $@"""
+        return $@"
                 <tr>
                     <td>{pair.Id}</td>
                     <td>{pair.FirstUserId}</td>
@@ -96,6 +98,6 @@ public class AdminService
                     <td>{pair.EndDate}</td>
                     <td>{pair.IsDeleted}</td>
                 </tr>
-""";
+";
     }
 }
