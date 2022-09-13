@@ -429,3 +429,4 @@ MigrationBackup/
 **/._.DS_Store
 
 appsecrets.json
+db.sqlite
