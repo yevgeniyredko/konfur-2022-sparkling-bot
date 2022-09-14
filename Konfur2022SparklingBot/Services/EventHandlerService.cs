@@ -27,6 +27,12 @@ public class EventHandlerService
     public async Task HandleUserAddedAsync(string username, long chatId, string name)
     {
         var user = await _userRepository.SelectAsync(username) ?? new User {Id = username};
+        if (user.State is (UserState.Swimming or UserState.Pairing))
+        {
+            await _messageSenderService.SendInvalidMessageAsync(chatId);
+            return;
+        }
+
         user.ChatId = chatId;
         user.Name = name;
         user.State = UserState.ConfirmingName;
