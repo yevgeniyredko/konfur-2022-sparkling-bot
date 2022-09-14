@@ -36,7 +36,7 @@ public static class UserRepositoryExtensions
     {
         var users = await source.SelectAllAsync();
 
-        return users.Where(x => x.Id != user.Id && x.State == UserState.WaitingForPair && HasSimilarAnswers(x, user)).ToList();
+        return users.OrderBy(x => x.PairsCount).Where(x => x.Id != user.Id && x.State == UserState.WaitingForPair && HasSimilarAnswers(x, user)).ToList();
 
         bool HasSimilarAnswers(User user1, User user2) =>
             (user1.Question1 == user2.Question1 && user1.Question2 == user2.Question2)

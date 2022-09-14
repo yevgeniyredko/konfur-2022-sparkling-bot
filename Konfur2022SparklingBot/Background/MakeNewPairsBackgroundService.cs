@@ -47,7 +47,7 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
             return;
         }
 
-        foreach (var user in users)
+        foreach (var user in users.OrderBy(x => x.PairsCount))
         {
             if (remainingPairsCount == 0)
             {
