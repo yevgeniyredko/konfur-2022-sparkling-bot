@@ -1,7 +1,6 @@
-using Konfur2022SparklingBot.Common.EventLoop;
 using Konfur2022SparklingBot.Common.HostedServices;
 
-namespace Konfur2022SparklingBot.Background;
+namespace Konfur2022SparklingBot.Common.EventLoop;
 
 public class EventLoopBackgroundService : PeriodicalBackgroundService
 {
