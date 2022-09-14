@@ -75,6 +75,14 @@ public class PairRepository
             new { Id = id });
     }
 
+    public async Task<Pair?> SelectAsync(string firstUserId, string secondUserId)
+    {
+        await using var conn = _dbConnectionFactory.Create();
+        return await conn.QuerySingleOrDefaultAsync<Pair>(
+            SelectByUsersSql,
+            new { User1 = firstUserId, User2 = secondUserId });
+    }
+    
     public async Task<Pair?> SelectNonStartedAsync(string userId)
     {
         await using var conn = _dbConnectionFactory.Create();
@@ -148,7 +156,13 @@ SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, Cre
 FROM pairs
 WHERE Id=@Id
 ";
-    
+
+    private const string SelectByUsersSql = @"
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
+FROM pairs
+WHERE (FirstUserId = @User1 AND SecondUserId = @User2) OR (FirstUserId = @User2 AND SecondUserId = @User1)
+";
+
     private const string SelectNonStartedSql = @"
 SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
