@@ -34,21 +34,25 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
 
     private async Task RunInternalAsync()
     {
-        var remainingPairsCount = _settings.MaxPairsCount - await _pairRepository.CountAsync(DateTime.UtcNow.Subtract(_settings.PairFinishTime));
+        var remainingPairsCount = _settings.MaxPairsCount -
+                                  await _pairRepository.CountAsync(DateTime.UtcNow.Subtract(_settings.PairFinishTime));
         if (remainingPairsCount <= 0)
         {
             return;
         }
 
-        while (remainingPairsCount > 0)
+        var users = await _userRepository.SelectAllAsync(UserState.WaitingForPair);
+        if (users.Count < 2)
         {
-            var users = await _userRepository.SelectAllAsync(UserState.WaitingForPair);
-            if (users.Count < 2)
+            return;
+        }
+
+        foreach (var user in users)
+        {
+            if (remainingPairsCount == 0)
             {
                 break;
             }
-
-            var user = users.First();
 
             var matched = await _userRepository.SelectMatchedAsync(user);
 
@@ -70,7 +74,6 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
             }
 
             await _eventHandlerService.HandlePairFoundAsync(user, secondUser);
-
             remainingPairsCount--;
         }
     }
