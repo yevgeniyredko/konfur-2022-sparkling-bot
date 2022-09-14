@@ -28,7 +28,7 @@ public class AdminService
     </head>
     <body>
         <h1>Users</h1>
-        <table>
+        <table border=""1"">
             <thead>
                 <tr>
                     <td>Id</td>
@@ -46,7 +46,7 @@ public class AdminService
         </table>
 
         <h1>Pairs</h1>
-        <table>
+        <table border=""1"">
             <thead>
                 <tr>
                     <td>Id</td>

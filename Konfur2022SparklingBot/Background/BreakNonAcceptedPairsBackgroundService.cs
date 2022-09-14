@@ -1,6 +1,6 @@
+using Konfur2022SparklingBot.Common.EventLoop;
 using Konfur2022SparklingBot.Common.HostedServices;
 using Konfur2022SparklingBot.Repositories.Pair;
-using Konfur2022SparklingBot.Repositories.User;
 using Konfur2022SparklingBot.Services;
 
 namespace Konfur2022SparklingBot.Background;
@@ -8,35 +8,33 @@ namespace Konfur2022SparklingBot.Background;
 public class BreakNonAcceptedPairsBackgroundService : PeriodicalBackgroundService
 {
     private readonly SparklingBotSettings _settings;
+    private readonly EventLoop _eventLoop;
     private readonly PairRepository _pairRepository;
-    private readonly UserRepository _userRepository;
-    private readonly MessageSenderService _messageSenderService;
+    private readonly EventHandlerService _eventHandlerService;
 
     public BreakNonAcceptedPairsBackgroundService(
         SparklingBotSettings settings,
+        EventLoop eventLoop,
         PairRepository pairRepository,
-        UserRepository userRepository,
-        MessageSenderService messageSenderService,
+        EventHandlerService eventHandlerService,
         PeriodicalBackgroundServiceParameters parameters)
         : base(parameters)
     {
         _settings = settings;
+        _eventLoop = eventLoop;
         _pairRepository = pairRepository;
-        _userRepository = userRepository;
-        _messageSenderService = messageSenderService;
+        _eventHandlerService = eventHandlerService;
     }
 
-    protected override async Task RunAsync(CancellationToken stoppingToken)
+    protected override async Task RunAsync(CancellationToken stoppingToken) => _eventLoop.Push(RunInternalAsync);
+
+    private async Task RunInternalAsync()
     {
         var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Subtract(_settings.PairAcceptTtl));
 
         foreach (var pair in pairs)
         {
-            await _messageSenderService.NotifyPairCanceledAsync(pair.FirstUserId);
-            await _messageSenderService.NotifyPairCanceledAsync(pair.SecondUserId);
-            await _userRepository.UpdateStateAsync(pair.FirstUserId, UserState.WaitingForPair);
-            await _userRepository.UpdateStateAsync(pair.SecondUserId, UserState.WaitingForPair);
-            await _pairRepository.DeleteAsync(pair.Id);
+            await _eventHandlerService.HandleNonAcceptedPairAsync(pair);
         }
     }
 }

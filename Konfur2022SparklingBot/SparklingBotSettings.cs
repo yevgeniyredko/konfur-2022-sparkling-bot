@@ -14,5 +14,7 @@ public class SparklingBotSettings
 
     public TimeSpan PairTime => _config.GetValue<TimeSpan>("PairTime");
 
+    public TimeSpan PairFinishTime => _config.GetValue<TimeSpan>("PairFinishTime");
+
     public TimeSpan PairAcceptTtl => _config.GetValue<TimeSpan>("PairAcceptTtl");
 }

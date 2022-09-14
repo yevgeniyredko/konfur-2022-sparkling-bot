@@ -19,7 +19,7 @@ public class UserRepository
     public async Task<User?> SelectAsync(string id)
     {
         await using var conn = _dbConnectionFactory.Create();
-        var user = await conn.QuerySingleAsync<User>(SelectByIdSql, new { Id = id });
+        var user = await conn.QuerySingleOrDefaultAsync<User>(SelectByIdSql, new { Id = id });
         return user;
     }
 

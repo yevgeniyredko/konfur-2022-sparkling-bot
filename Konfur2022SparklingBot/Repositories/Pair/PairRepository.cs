@@ -9,10 +9,10 @@ public class PairRepository
 
     public PairRepository(DbConnectionFactory dbConnectionFactory) => _dbConnectionFactory = dbConnectionFactory;
 
-    public async Task<int> CountAsync()
+    public async Task<int> CountAsync(DateTime dateTime)
     {
         await using var conn = _dbConnectionFactory.Create();
-        return await conn.ExecuteScalarAsync<int>(SelectCountSql);
+        return await conn.ExecuteScalarAsync<int>(SelectCountSql, new { EndDate = dateTime });
     }
     
     public async Task CreateAsync(string firstUserId, string secondUserId)
@@ -35,24 +35,54 @@ public class PairRepository
         await conn.ExecuteAsync(DeleteSql, new { Id = id });
     }
 
-    public async Task AcceptAsync(string userId)
+    public async Task SetFirstUserAcceptedAsync(string pairId, bool answer)
     {
-        await SetAcceptedAsync(userId, true);
+        await using var conn = _dbConnectionFactory.Create();
+        await conn.ExecuteAsync(
+            SetFirstUserAcceptedSql,
+            new { Id = pairId, FirstUserAccepted = answer });
     }
 
-    public async Task RejectAsync(string userId)
+    public async Task SetSecondUserAcceptedAsync(string pairId, bool answer)
     {
-        await SetAcceptedAsync(userId, false);
+        await using var conn = _dbConnectionFactory.Create();
+        await conn.ExecuteAsync(
+            SetSecondUserAcceptedSql,
+            new { Id = pairId, SecondUserAccepted = answer });
     }
 
-    public async Task<Pair> SelectAsync(string firstUserId, string secondUserId)
+    public async Task SetStartedAsync(string pairId, DateTime dateTime)
+    {
+        await using var conn = _dbConnectionFactory.Create();
+        await conn.ExecuteAsync(
+            SetStartedSql,
+            new { Id = pairId, StartDate = dateTime.Ticks });
+    }
+
+    public async Task SetEndedAsync(string pairId, DateTime dateTime)
+    {
+        await using var conn = _dbConnectionFactory.Create();
+        await conn.ExecuteAsync(
+            SetEndedSql,
+            new { Id = pairId, EndDate = dateTime.Ticks });
+    }
+    
+    public async Task<Pair> SelectAsync(string id)
     {
         await using var conn = _dbConnectionFactory.Create();
         return await conn.QuerySingleAsync<Pair>(
-            SelectByUsersSql,
-            new { FirstUserId = firstUserId, SecondUserId = secondUserId });
+            SelectSql,
+            new { Id = id });
     }
 
+    public async Task<Pair?> SelectNonStartedAsync(string userId)
+    {
+        await using var conn = _dbConnectionFactory.Create();
+        return await conn.QuerySingleAsync<Pair>(
+            SelectNonStartedSql,
+            new { UserId = userId });
+    }
+    
     public async Task<List<Pair>> SelectAllAsync()
     {
         await using var conn = _dbConnectionFactory.Create();
@@ -84,17 +114,6 @@ public class PairRepository
         await conn.ExecuteAsync(CreateTableSql);
     }
 
-    private async Task SetAcceptedAsync(string userId, bool accepted)
-    {
-        await using var conn = _dbConnectionFactory.Create();
-        await conn.ExecuteAsync(
-            SetFirstUserAcceptedSql,
-            new { FirstUserId = userId, FirstUserAccepted = accepted });
-        await conn.ExecuteAsync(
-            SetSecondUserAcceptedSql,
-            new { SecondUserId = userId, SecondUserAccepted = accepted });
-    }
-
     private const string CreateTableSql = @"
 CREATE TABLE IF NOT EXISTS pairs (
     Id TEXT NOT NULL PRIMARY KEY,
@@ -121,13 +140,19 @@ WHERE Id=@Id
     private const string SelectCountSql = @"
 SELECT COUNT (Id)
 FROM pairs
-WHERE IsDeleted=FALSE AND FirstUserAccepted=TRUE AND SecondUserAccepted=TRUE AND StartDate <> NULL AND EndDate=NULL
+WHERE IsDeleted=FALSE AND (EndDate IS NULL OR EndDate>@EndDate)
 ";
 
-    private const string SelectByUsersSql = @"
+    private const string SelectSql = @"
 SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
-WHERE FirstUserId=@FirstUserId AND SecondUserId=@SecondUserId
+WHERE Id=@Id
+";
+    
+    private const string SelectNonStartedSql = @"
+SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
+FROM pairs
+WHERE IsDeleted=FALSE AND (FirstUserId=@UserId OR SecondUserId=@UserId) AND StartDate IS NULL
 ";
 
     private const string SelectAllSql = @"
@@ -138,24 +163,36 @@ FROM pairs
     private const string SelectCreatedNonStartedBeforeSql = @"
 SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
-WHERE StartDate=NULL AND CreationDate<@CreationDate
+WHERE IsDeleted=FALSE AND StartDate IS NULL AND CreationDate<@CreationDate
 ";
     
     private const string SelectStartedBeforeSql = @"
 SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
-WHERE StartDate<@StartDate
+WHERE IsDeleted=FALSE AND StartDate<@StartDate AND EndDate IS NULL
 ";
 
+    private const string SetStartedSql = @"
+UPDATE pairs
+SET StartDate=@StartDate
+WHERE Id=@Id
+";
+    
+    private const string SetEndedSql = @"
+UPDATE pairs
+SET EndDate=@EndDate
+WHERE Id=@Id
+";
+    
     private const string SetFirstUserAcceptedSql = @"
 UPDATE pairs
 SET FirstUserAccepted=@FirstUserAccepted
-WHERE FirstUserId=@FirstUserId AND FirstUserAccepted=NULL
+WHERE Id=@Id
 ";
     
     private const string SetSecondUserAcceptedSql = @"
 UPDATE pairs
 SET SecondUserAccepted=@SecondUserAccepted
-WHERE SecondUserId=@SecondUserId AND SecondUserAccepted=NULL
+WHERE Id=@Id
 ";
 }

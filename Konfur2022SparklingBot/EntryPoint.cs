@@ -1,11 +1,11 @@
 using Konfur2022SparklingBot;
 using Konfur2022SparklingBot.Background;
 using Konfur2022SparklingBot.Common.DataAccess;
+using Konfur2022SparklingBot.Common.EventLoop;
 using Konfur2022SparklingBot.Common.HostedServices;
 using Konfur2022SparklingBot.Repositories.Pair;
 using Konfur2022SparklingBot.Repositories.User;
 using Konfur2022SparklingBot.Services;
-using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,11 +29,13 @@ builder.Services
 
 builder.Services
     .AddSingleton<AdminService>()
-    .AddSingleton<MessageHandlerService>()
+    .AddSingleton<EventHandlerService>()
     .AddSingleton<MessageSenderService>();
 
 builder.Services
     .AddSingleton<PeriodicalBackgroundServiceParameters>()
+    .AddSingleton<EventLoop>()
+    .AddHostedService<EventLoopBackgroundService>()
     .AddHostedService<MessageHandlerBackgroundService>()
     .AddHostedService<MakeNewPairsBackgroundService>()
     .AddHostedService<BreakNonAcceptedPairsBackgroundService>()
