@@ -17,7 +17,7 @@ public abstract class PeriodicalBackgroundService : BackgroundService
     protected PeriodicalBackgroundService(PeriodicalBackgroundServiceParameters parameters)
         => _logger = parameters.LoggerFactory.CreateLogger(GetType());
 
-    protected virtual TimeSpan Interval => TimeSpan.FromSeconds(1);
+    protected virtual TimeSpan Interval => TimeSpan.FromMinutes(1);
 
     protected abstract Task RunAsync(CancellationToken stoppingToken);
     
