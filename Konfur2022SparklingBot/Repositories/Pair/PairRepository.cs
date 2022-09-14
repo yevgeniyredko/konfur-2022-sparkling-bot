@@ -71,7 +71,7 @@ public class PairRepository
     {
         await using var conn = _dbConnectionFactory.Create();
         return await conn.QuerySingleAsync<Pair>(
-            SelectSql,
+            SelectByIdSql,
             new { Id = id });
     }
 
@@ -151,38 +151,28 @@ FROM pairs
 WHERE IsDeleted=FALSE AND (EndDate IS NULL OR EndDate>@EndDate)
 ";
 
-    private const string SelectSql = @"
-SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
-FROM pairs
-WHERE Id=@Id
-";
-
-    private const string SelectByUsersSql = @"
-SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
-FROM pairs
-WHERE (FirstUserId = @User1 AND SecondUserId = @User2) OR (FirstUserId = @User2 AND SecondUserId = @User1)
-";
-
-    private const string SelectNonStartedSql = @"
-SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
-FROM pairs
-WHERE IsDeleted=FALSE AND (FirstUserId=@UserId OR SecondUserId=@UserId) AND StartDate IS NULL
-";
-
     private const string SelectAllSql = @"
 SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
 FROM pairs
 ";
 
-    private const string SelectCreatedNonStartedBeforeSql = @"
-SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
-FROM pairs
+    private const string SelectByIdSql = SelectAllSql + @" 
+WHERE Id=@Id
+";
+
+    private const string SelectByUsersSql = SelectAllSql + @" 
+WHERE (FirstUserId = @User1 AND SecondUserId = @User2) OR (FirstUserId = @User2 AND SecondUserId = @User1)
+";
+
+    private const string SelectNonStartedSql = SelectAllSql + @" 
+WHERE IsDeleted=FALSE AND (FirstUserId=@UserId OR SecondUserId=@UserId) AND StartDate IS NULL
+";
+
+    private const string SelectCreatedNonStartedBeforeSql = SelectAllSql + @" 
 WHERE IsDeleted=FALSE AND StartDate IS NULL AND CreationDate<@CreationDate
 ";
     
-    private const string SelectStartedBeforeSql = @"
-SELECT Id, FirstUserId, FirstUserAccepted, SecondUserId, SecondUserAccepted, CreationDate, StartDate, EndDate, IsDeleted
-FROM pairs
+    private const string SelectStartedBeforeSql = SelectAllSql + @" 
 WHERE IsDeleted=FALSE AND StartDate<@StartDate AND EndDate IS NULL
 ";
 

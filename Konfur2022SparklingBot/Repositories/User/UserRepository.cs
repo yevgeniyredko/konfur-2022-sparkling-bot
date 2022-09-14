@@ -64,7 +64,5 @@ ON CONFLICT(Id) DO UPDATE
 SELECT Id, Name, ChatId, Question1, Question2, Question3, State, PairsCount FROM users
 ";
     
-    private const string SelectByIdSql = @"
-SELECT Id, Name, ChatId, Question1, Question2, Question3, State, PairsCount FROM users Where Id=@Id
-";
+    private const string SelectByIdSql = SelectAllSql + @" WHERE Id=@Id";
 }
