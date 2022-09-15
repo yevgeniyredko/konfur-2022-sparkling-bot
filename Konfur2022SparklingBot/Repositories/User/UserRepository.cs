@@ -40,28 +40,28 @@ CREATE TABLE IF NOT EXISTS users (
     Id TEXT NOT NULL PRIMARY KEY,
     Name TEXT NOT NULL,
     ChatId INTEGER NOT NULL,
-    Question1 BOOLEAN,
+    IsMan BOOLEAN,
     Question2 BOOLEAN,
-    Question3 BOOLEAN,
+    WantMan BOOLEAN,
     State INTEGER NOT NULL,
     PairsCount INTEGER
 )";
 
     private const string UpsertSql = @"
-INSERT INTO users(Id, Name, ChatId, Question1, Question2, Question3, State, PairsCount)
-    VALUES(@Id, @Name, @ChatId, @Question1, @Question2, @Question3, @State, @PairsCount)
+INSERT INTO users(Id, Name, ChatId, IsMan, Question2, WantMan, State, PairsCount)
+    VALUES(@Id, @Name, @ChatId, @IsMan, @Question2, @WantMan, @State, @PairsCount)
 ON CONFLICT(Id) DO UPDATE
     SET Name=@Name, 
         ChatId=@ChatId,
-        Question1=@Question1,
+        IsMan=@IsMan,
         Question2=@Question2,
-        Question3=@Question3,
+        WantMan=@WantMan,
         State=@State,
         PairsCount=@PairsCount;
 ";
 
     private const string SelectAllSql = @"
-SELECT Id, Name, ChatId, Question1, Question2, Question3, State, PairsCount FROM users
+SELECT Id, Name, ChatId, IsMan, Question2, WantMan, State, PairsCount FROM users
 ";
     
     private const string SelectByIdSql = SelectAllSql + @" WHERE Id=@Id";

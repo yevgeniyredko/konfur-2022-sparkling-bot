@@ -17,6 +17,9 @@ public class MessageSenderService
     public async Task SendInternalErrorAsync(long chatId)
         => await _telegramBotClient.SendTextMessageAsync(new ChatId(chatId), TextConstants.InternalError);
 
+    public async Task SendFirstMessageAsync(long chatId)
+        => await _telegramBotClient.SendTextMessageAsync(new ChatId(chatId), TextConstants.FirstMessage);
+
     public async Task QueryNameConfirmationAsync(User user)
         => await QueryAsync(user.ChatId, TextConstants.Hello(user.Name), TextConstants.Change, TextConstants.Ok);
 
@@ -78,13 +81,19 @@ public class MessageSenderService
             replyMarkup: new ReplyKeyboardRemove());
 
     public async Task NotifyPairStartedAsync(User user1, User user2)
-        => await NotifyTwoUsersAsync(user1, user2, TextConstants.Match);
+    {
+        await _telegramBotClient.SendTextMessageAsync(
+            new ChatId(user1.ChatId),
+            TextConstants.Match,
+            replyMarkup: new ReplyKeyboardRemove());
+        await _telegramBotClient.SendTextMessageAsync(
+            new ChatId(user2.ChatId),
+            TextConstants.Match,
+            replyMarkup: new ReplyKeyboardRemove());
+    }
 
     public async Task NotifyPairCanceledAsync(User user1, User user2)
         => await NotifyTwoUsersAsync(user1, user2, TextConstants.PairCanceled);
-
-    public async Task NotifyPairFinishedAsync(User user1, User user2)
-        => await NotifyTwoUsersAsync(user1, user2, TextConstants.PairFinished);
 
     private async Task QueryAsync(long chatId, string question, string answer1, string answer2) =>
         await _telegramBotClient.SendTextMessageAsync(

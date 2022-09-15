@@ -5,11 +5,13 @@ namespace Konfur2022SparklingBot.Services;
 
 public class AdminService
 {
+    private readonly SparklingBotSettings _settings;
     private readonly UserRepository _userRepository;
     private readonly PairRepository _pairRepository;
 
-    public AdminService(UserRepository userRepository, PairRepository pairRepository)
+    public AdminService(SparklingBotSettings settings, UserRepository userRepository, PairRepository pairRepository)
     {
+        _settings = settings;
         _userRepository = userRepository;
         _pairRepository = pairRepository;
     }
@@ -18,13 +20,14 @@ public class AdminService
     {
         var users = await _userRepository.SelectAllAsync();
         var pairs = await _pairRepository.SelectAllAsync();
+        var activePairs = pairs.Where(p => !p.IsDeleted);
 
         return $@"
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset=""utf-8"">
-        <title>Konfur 2022 Sparkling Bot</title>
+        <title>Konfur 2022 Sparkling Bot admin</title>
     </head>
     <body>
         <h1>Users</h1>
@@ -34,14 +37,35 @@ public class AdminService
                     <td>Id</td>
                     <td>ChatId</td>
                     <td>Name</td>
-                    <td>Q1</td>
+                    <td>IsMan</td>
                     <td>Q2</td>
-                    <td>Q3</td>
+                    <td>WantsMan</td>
                     <td>State</td>
+                    <td>PairsCount</td>
                 </tr>
             </thead>
             <tbody>
                 {string.Join(Environment.NewLine, users.Select(BuildUserRow))}
+            </tbody>
+        </table>
+
+        <h1>Accepted pairs</h1>
+        <table border=""1"">
+            <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>FirstUserId</td>
+                    <td>FirstUserAccepted</td>
+                    <td>SecondUserId</td>
+                    <td>SecondUserAccepted</td>
+                    <td>CreationDate</td>
+                    <td>StartDate</td>
+                    <td>EndDate</td>
+                    <td>IsDeleted</td>
+                </tr>
+            </thead>
+            <tbody>
+                {string.Join(Environment.NewLine, activePairs.Select(BuildPairRow))}
             </tbody>
         </table>
 
@@ -76,10 +100,11 @@ public class AdminService
                     <td>{user.Id}</td>
                     <td>{user.ChatId}</td>
                     <td>{user.Name}</td>
-                    <td>{user.Question1}</td>
+                    <td>{user.IsMan}</td>
                     <td>{user.Question2}</td>
-                    <td>{user.Question3}</td>
+                    <td>{user.WantMan}</td>
                     <td>{user.State}</td>
+                    <td>{user.PairsCount}</td>
                 </tr>
 ";
     }

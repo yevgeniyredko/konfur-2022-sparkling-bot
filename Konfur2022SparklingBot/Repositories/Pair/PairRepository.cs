@@ -9,10 +9,10 @@ public class PairRepository
 
     public PairRepository(DbConnectionFactory dbConnectionFactory) => _dbConnectionFactory = dbConnectionFactory;
 
-    public async Task<int> CountAsync(DateTime dateTime)
+    public async Task<int> CountAsync()
     {
         await using var conn = _dbConnectionFactory.Create();
-        return await conn.ExecuteScalarAsync<int>(SelectCountSql, new { EndDate = dateTime });
+        return await conn.ExecuteScalarAsync<int>(SelectCountSql);
     }
     
     public async Task CreateAsync(string firstUserId, string secondUserId)
@@ -91,6 +91,14 @@ public class PairRepository
             new { UserId = userId });
     }
     
+    public async Task<Pair?> SelectStartedAsync(string userId)
+    {
+        await using var conn = _dbConnectionFactory.Create();
+        return await conn.QuerySingleAsync<Pair>(
+            SelectStartedSql,
+            new { UserId = userId });
+    }
+    
     public async Task<List<Pair>> SelectAllAsync()
     {
         await using var conn = _dbConnectionFactory.Create();
@@ -148,7 +156,7 @@ WHERE Id=@Id
     private const string SelectCountSql = @"
 SELECT COUNT (Id)
 FROM pairs
-WHERE IsDeleted=FALSE AND (EndDate IS NULL OR EndDate>@EndDate)
+WHERE IsDeleted=FALSE
 ";
 
     private const string SelectAllSql = @"
@@ -166,6 +174,10 @@ WHERE (FirstUserId = @User1 AND SecondUserId = @User2) OR (FirstUserId = @User2 
 
     private const string SelectNonStartedSql = SelectAllSql + @" 
 WHERE IsDeleted=FALSE AND (FirstUserId=@UserId OR SecondUserId=@UserId) AND StartDate IS NULL
+";
+
+    private const string SelectStartedSql = SelectAllSql + @" 
+WHERE IsDeleted=FALSE AND (FirstUserId=@UserId OR SecondUserId=@UserId) AND StartDate IS NOT NULL AND EndDate IS NULL
 ";
 
     private const string SelectCreatedNonStartedBeforeSql = SelectAllSql + @" 

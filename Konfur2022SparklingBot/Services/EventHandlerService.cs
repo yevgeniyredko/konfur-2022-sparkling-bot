@@ -33,6 +33,7 @@ public class EventHandlerService
             return;
         }
 
+        await _messageSenderService.SendFirstMessageAsync(chatId);
         user.ChatId = chatId;
         user.Name = name;
         user.State = UserState.ConfirmingName;
@@ -106,22 +107,11 @@ public class EventHandlerService
     {
         var user1 = await _userRepository.SelectAsync(pair.FirstUserId);
         var user2 = await _userRepository.SelectAsync(pair.SecondUserId);
-        
+
         await _messageSenderService.NotifyPairCanceledAsync(user1, user2);
         await _userRepository.UpdateStateAsync(pair.FirstUserId, UserState.WaitingForPair);
         await _userRepository.UpdateStateAsync(pair.SecondUserId, UserState.WaitingForPair);
         await _pairRepository.DeleteAsync(pair.Id);
-    }
-
-    public async Task HandleFinishedPairAsync(Pair pair)
-    {
-        var user1 = await _userRepository.SelectAsync(pair.FirstUserId);
-        var user2 = await _userRepository.SelectAsync(pair.SecondUserId);
-        
-        await _messageSenderService.NotifyPairFinishedAsync(user1, user2);
-        await _userRepository.UpdateStateAsync(pair.FirstUserId, UserState.WaitingForPair);
-        await _userRepository.UpdateStateAsync(pair.SecondUserId, UserState.WaitingForPair);
-        await _pairRepository.SetEndedAsync(pair.Id, DateTime.UtcNow);
     }
     
     private async Task HandleConfirmingNameAsync(User user, string? text)
@@ -172,7 +162,7 @@ public class EventHandlerService
             return;
         }
 
-        user.Question1 = text == TextConstants.Question1Answer1;
+        user.IsMan = text == TextConstants.Question1Answer1;
         await _userRepository.UpdateAsync(user);
         await GoToQuestion2Async(user);
         
@@ -212,7 +202,7 @@ public class EventHandlerService
             return;
         }
 
-        user.Question3 = text == TextConstants.Question3Answer1;
+        user.WantMan = text == TextConstants.Question3Answer1;
         await _userRepository.UpdateAsync(user);
         await GoToWaitingForPairAsync(user);
         
@@ -235,6 +225,7 @@ public class EventHandlerService
         var pair = await _pairRepository.SelectNonStartedAsync(user.Id);
         if (pair == null)
         {
+            await _messageSenderService.SendInternalErrorAsync(user.ChatId);
             return;
         }
         
@@ -255,7 +246,10 @@ public class EventHandlerService
             await _messageSenderService.NotifyYouRejectedAsync(user);
             await _messageSenderService.NotifyOtherRejectedAsync(otherUser);
             await _userRepository.UpdateStateAsync(user.Id, UserState.WaitingForPair);
-            await _userRepository.UpdateStateAsync(otherUser.Id, UserState.WaitingForPair);
+
+            otherUser.PairsCount--;
+            otherUser.State = UserState.WaitingForPair;
+            await _userRepository.UpdateAsync(otherUser);
             await _pairRepository.DeleteAsync(pair.Id);
             return;
         }
@@ -276,10 +270,5 @@ public class EventHandlerService
         await _userRepository.UpdateStateAsync(user.Id, UserState.Swimming);
         await _userRepository.UpdateStateAsync(otherUser.Id, UserState.Swimming);
         await _pairRepository.SetStartedAsync(pair.Id, DateTime.UtcNow);
-    }
-
-    private async Task HandlePairEndRequestAsync()
-    {
-        throw new NotImplementedException();
     }
 }

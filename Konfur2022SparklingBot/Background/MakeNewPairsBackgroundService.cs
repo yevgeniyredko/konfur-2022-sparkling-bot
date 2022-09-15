@@ -34,8 +34,7 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
 
     private async Task RunInternalAsync()
     {
-        var remainingPairsCount = _settings.MaxPairsCount -
-                                  await _pairRepository.CountAsync(DateTime.UtcNow.Subtract(_settings.PairFinishTime));
+        var remainingPairsCount = _settings.MaxPairsCount - await _pairRepository.CountAsync();
         if (remainingPairsCount <= 0)
         {
             return;

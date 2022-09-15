@@ -25,7 +25,7 @@ public static class UserRepositoryExtensions
         user.PairsCount++;
         await source.UpdateAsync(user);
     }
-    
+
     public static async Task<List<User>> SelectAllAsync(this UserRepository source, UserState state)
     {
         var users = await source.SelectAllAsync();
@@ -36,11 +36,16 @@ public static class UserRepositoryExtensions
     {
         var users = await source.SelectAllAsync();
 
-        return users.OrderBy(x => x.PairsCount).Where(x => x.Id != user.Id && x.State == UserState.WaitingForPair && HasSimilarAnswers(x, user)).ToList();
+        return users.OrderBy(x => x.PairsCount)
+            .Where(x => x.Id != user.Id && x.State == UserState.WaitingForPair && HasCorrectAnswers(x, user)).ToList();
 
-        bool HasSimilarAnswers(User user1, User user2) =>
-            (user1.Question1 == user2.Question1 && user1.Question2 == user2.Question2)
-            || (user1.Question1 == user2.Question1 && user1.Question3 == user2.Question3)
-            || (user1.Question2 == user2.Question2 && user1.Question3 == user2.Question3);
+        bool HasCorrectAnswers(User user1, User user2) =>
+            (
+                (user1.IsMan && user2.IsMan && user1.WantMan && user2.WantMan)
+                || (!user1.IsMan && !user2.IsMan && !user1.WantMan && !user2.WantMan)
+                || (user1.IsMan && !user2.IsMan && !user1.WantMan && user2.WantMan)
+                || (!user1.IsMan && user2.IsMan && user1.WantMan && !user2.WantMan)
+            )
+            && (user1.Question2 == user2.Question2);
     }
 }

@@ -38,8 +38,7 @@ builder.Services
     .AddHostedService<EventLoopBackgroundService>()
     .AddHostedService<MessageHandlerBackgroundService>()
     .AddHostedService<MakeNewPairsBackgroundService>()
-    .AddHostedService<BreakNonAcceptedPairsBackgroundService>()
-    .AddHostedService<BreakFinishedPairsBackgroundService>();
+    .AddHostedService<BreakNonAcceptedPairsBackgroundService>();
 
 var app = builder.Build();
 
