@@ -30,7 +30,7 @@ public class BreakNonAcceptedPairsBackgroundService : PeriodicalBackgroundServic
 
     private async Task RunInternalAsync()
     {
-        var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Subtract(_settings.PairAcceptTtl));
+        var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Add(_settings.PairAcceptTtl));
 
         foreach (var pair in pairs)
         {
