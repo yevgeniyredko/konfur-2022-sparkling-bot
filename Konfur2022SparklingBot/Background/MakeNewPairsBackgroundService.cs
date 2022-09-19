@@ -58,7 +58,7 @@ public class MakeNewPairsBackgroundService : PeriodicalBackgroundService
             User? secondUser = null;
             foreach (var secondCandidate in matched)
             {
-                if (await _pairRepository.SelectAsync(user.Id, secondCandidate.Id) != null)
+                if ((await _pairRepository.SelectAsync(user.Id, secondCandidate.Id)).Any() ||await _pairRepository.SelectNonStartedAsync(user.Id) != null ||await _pairRepository.SelectNonStartedAsync(secondCandidate.Id) != null)
                 {
                     continue;
                 }

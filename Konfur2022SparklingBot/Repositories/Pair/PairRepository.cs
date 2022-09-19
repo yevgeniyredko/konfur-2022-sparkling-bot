@@ -75,10 +75,10 @@ public class PairRepository
             new { Id = id });
     }
 
-    public async Task<Pair?> SelectAsync(string firstUserId, string secondUserId)
+    public async Task<IEnumerable<Pair?>> SelectAsync(string firstUserId, string secondUserId)
     {
         await using var conn = _dbConnectionFactory.Create();
-        return await conn.QuerySingleOrDefaultAsync<Pair>(
+        return await conn.QueryAsync<Pair>(
             SelectByUsersSql,
             new { User1 = firstUserId, User2 = secondUserId });
     }
@@ -86,7 +86,7 @@ public class PairRepository
     public async Task<Pair?> SelectNonStartedAsync(string userId)
     {
         await using var conn = _dbConnectionFactory.Create();
-        return await conn.QuerySingleAsync<Pair>(
+        return await conn.QuerySingleOrDefaultAsync<Pair>(
             SelectNonStartedSql,
             new { UserId = userId });
     }

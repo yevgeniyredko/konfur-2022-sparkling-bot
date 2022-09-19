@@ -26,11 +26,15 @@ public class BreakNonAcceptedPairsBackgroundService : PeriodicalBackgroundServic
         _eventHandlerService = eventHandlerService;
     }
 
-    protected override async Task RunAsync(CancellationToken stoppingToken) => _eventLoop.Push(RunInternalAsync);
+    protected override async Task RunAsync(CancellationToken stoppingToken)
+    {
+        return;
+        _eventLoop.Push(RunInternalAsync);
+    }
 
     private async Task RunInternalAsync()
     {
-        var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Add(_settings.PairAcceptTtl));
+        var pairs = await _pairRepository.SelectCreatedNonStartedBeforeAsync(DateTime.UtcNow.Subtract(_settings.PairAcceptTtl));
 
         foreach (var pair in pairs)
         {
